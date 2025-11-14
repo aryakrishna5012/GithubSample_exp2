@@ -11,8 +11,6 @@ import com.example.HotelManagementB2B.entity.User;
 import java.security.Key;
 import java.util.Date;
 
-import javax.crypto.SecretKey;
-
 @Service
 public class JwtService {
 
@@ -22,7 +20,7 @@ public class JwtService {
     @Value("${app.jwt.expiration-ms}")
     private long expirationMs;
 
-    private SecretKey getSigningKey() {
+    private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
@@ -37,17 +35,16 @@ public class JwtService {
                 .compact();
     }
 
-    public Claims extractUsername(String token) {
-        return Jwts.parser()
-    			.verifyWith(getSigningKey())
-    			.build()
-    			.parseSignedClaims(token)
-    			.getPayload();
+    public String extractUsername(String token) {
+        return Jwts.parser().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public boolean isTokenValid(String token, String username) {
         try {
-            Claims sub = extractUsername(token);
+            String sub = extractUsername(token);
             return sub.equals(username) && !isTokenExpired(token);
         } catch (JwtException e) {
             return false;
