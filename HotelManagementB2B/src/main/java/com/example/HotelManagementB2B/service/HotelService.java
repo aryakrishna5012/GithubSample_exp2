@@ -1,6 +1,8 @@
 package com.example.HotelManagementB2B.service;
 
 
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.HotelManagementB2B.dto.HotelDTO;
@@ -25,7 +27,7 @@ public class HotelService {
     	this.jwtService = jwtService;
     	this.userRepository = userRepository;
     	}
-
+    @CachePut(value="hotels",key="#id")
     public HotelDTO addHotel(Hotel hotel,String token,HttpSession session) {
     	
     	String username = jwtService.extractUsername(token);
@@ -40,12 +42,7 @@ public class HotelService {
         return mapToDto(saved);
     }
     
-    
-    
-    
-    
-    
-
+    @Cacheable(value="hotels",key="#hotel.city")
     public List<HotelDTO> getHotelsByCity(String city) {
         return hotelRepository
         		.findByCityAndApprovedTrue(city)

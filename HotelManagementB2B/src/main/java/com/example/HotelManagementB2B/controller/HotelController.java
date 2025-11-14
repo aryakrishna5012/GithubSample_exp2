@@ -1,5 +1,6 @@
 package com.example.HotelManagementB2B.controller;
 
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class HotelController {
     public HotelController(HotelService hotelService) { 
     	this.hotelService = hotelService; }
 
-    
+  
     @PreAuthorize("hasRole('HOTEL')")
     @PostMapping("/add")
     public ResponseEntity<HotelDTO> addHotel(
